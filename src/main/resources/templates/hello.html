@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <title>Hello World!</title>
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.2.min.js" type="text/javascript"></script>
+
+<body>
+<h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>
+<form th:action="@{/logout}" method="post">
+    <input type="submit" value="Sign Out"/>
+</form>
+<div class="convert"></div>
+<div class="buttons">
+    <button id="get">GET</button>
+</div>
+<div class="emp"></div>
+
+<script>
+    $("#get").click(function () {
+        var $emp = $('#emp');
+        $(".textField").empty();
+        $.ajax({
+            url: '/employees/get',
+            type: 'GET',
+            contentType: 'application/json',
+            success: function (res) {
+                $.each(res,function (i,emp) {
+                    $emp.append(emp.name)
+                })
+                console.log(res)
+                $(".textField").append(res)
+
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        })
+
+    })
+
+</script>
+</body>
+</html>
