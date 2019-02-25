@@ -21,11 +21,11 @@ public class MainController {
         return "home";
     }
 
-    @GetMapping("/employees")
+    @GetMapping("/hello")
     public String getAllEmployees(Model model) {
         List<Employees> employees = employeesService.getEmployees();
         model.addAttribute("employees", employees);
-        return "home";
-
+        return "hello";
     }
+
 }

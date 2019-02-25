@@ -1,1 +1,4 @@
 If you would like to test the authentication page, you can go in this path "http://localhost: 8383/"
+Login : ukeess
+Password : password
+Also if you want to test the web you can run a web test collection in Postman

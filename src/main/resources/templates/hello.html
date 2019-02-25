@@ -12,35 +12,81 @@
 <form th:action="@{/logout}" method="post">
     <input type="submit" value="Sign Out"/>
 </form>
-<div class="convert"></div>
-<div class="buttons">
-    <button id="get">GET</button>
-</div>
-<div class="emp"></div>
+<header>
+    <H1>JSON AND AJAX</H1>
+    <button class="btn">Get all employees</button>
+</header>
+<div class="employees"></div>
+<div id="deleteEmployees"></div>
+</body>
+<form th:action="@{/employees/search}" method="post">
+    <input type="text" name="name" placeholder="enter name">
+    <input type="submit" value="search">
+</form>
+
+<h2>Employees</h2>
+<table id="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Active</th>
+        <th>Department</th>
+        <th>Delete</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr id="delete" th:each="employees : ${employees}">
+            <td id="idEmpl" th:text="${employees.employeesId}"></td>
+            <td th:text="${employees.employeesName}"></td>
+            <td th:text="${employees.active}"></td>
+            <td th:text="${employees.employeesDepartments.departmentName}"></td>
+            <td>
+                <input type="button" class="delete" id="deletebtn" value="delete">
+            </td>
+        </tr>
+    </tbody>
+</table>
 
 <script>
-    $("#get").click(function () {
-        var $emp = $('#emp');
-        $(".textField").empty();
+    $('.delete').click(function () {
+        var val = $("#idEmpl").text();
         $.ajax({
-            url: '/employees/get',
-            type: 'GET',
-            contentType: 'application/json',
-            success: function (res) {
-                $.each(res,function (i,emp) {
-                    $emp.append(emp.name)
-                })
-                console.log(res)
-                $(".textField").append(res)
-
+            type: "DELETE",
+            contentType: "application/json",
+            url: '/employees/delete/' + val,
+            success: function (data) {
+                var elementById = document.getElementById("delete");
+                console.log(elementById)
+                elementById.remove();
             },
-            error: function (err) {
-                console.log(err)
+            error: function (data) {
+                console.log(data);
             }
-        })
+        });
+    });
+    $('.btn').click(function () {
+        $('.employees').empty();
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: "/employees/get",
+            success: function (data) {
+                var employees = JSON.parse(JSON.stringify(data));
+                for (var i in employees) {
+                    $('.employees').append("<tr> \
+                            <td>" + employees[i].employeesId + "</td> \
+                            <td>" + employees[i].employeesName + "</td> \
+                            <td>" + employees[i].employeesDepartments.departmentName + "</td> \
+                        </tr>");
+                }
+            },
+            error: function (data) {
+                console.log(data);
+            }
+        });
 
-    })
+    });
 
 </script>
-</body>
 </html>

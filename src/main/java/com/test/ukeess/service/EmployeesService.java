@@ -12,4 +12,5 @@ public interface EmployeesService {
     Employees update(EmployeesRequest employeesRequest);
     Employees addEmployeesToDepartments(int employerId, int departmentId);
     void deleteEmployees(int employerId);
+    Employees searchByName(String name);
 }

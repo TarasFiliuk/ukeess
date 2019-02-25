@@ -76,6 +76,11 @@ public class EmployeesServiceImpl implements EmployeesService {
         employeesRepository.deleteById(employees.getEmployeesId());
     }
 
+    @Override
+    public Employees searchByName(String name) {
+        return employeesRepository.findByEmployeesName(name);
+    }
+
     private Employees save(Employees employees) {
         return employeesRepository.save(employees);
     }

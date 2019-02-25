@@ -82,4 +82,15 @@ public class EmployeesController {
         employeesService.deleteEmployees(employeesId);
         return ok().build();
     }
+
+    @ApiOperation("search employees")
+    @ApiResponses(value = {
+            @ApiResponse(code = SC_OK, message = "search employees"),
+            @ApiResponse(code = SC_UNAUTHORIZED, message = OPERATION_NOT_ALLOWED_MESSAGE, response = Errors.class),
+            @ApiResponse(code = SC_INTERNAL_SERVER_ERROR, message = INTERNAL_SERVER_ERROR_MESSAGE)})
+    @PostMapping("/search")
+    public ResponseEntity searchEmployees(@RequestParam(value = "name") String name) {
+        Employees employees = employeesService.searchByName(name);
+        return ok().body(employees);
+    }
 }
