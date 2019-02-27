@@ -3,19 +3,21 @@ package com.test.ukeess.service.impl;
 import com.test.ukeess.exeption.TestNotFoundExeption;
 import com.test.ukeess.model.Departments;
 import com.test.ukeess.model.Employees;
-import com.test.ukeess.repository.EmployeesRepository;
 import com.test.ukeess.request.EmployeesRequest;
 import com.test.ukeess.service.DepartmentService;
 import com.test.ukeess.service.EmployeesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 import static com.test.ukeess.model.Employees.Active.*;
-import static java.lang.String.format;
+import static com.test.ukeess.service.impl.DepartmentServiceImpl.departmentsMap;
 import static java.util.Optional.ofNullable;
 
 
@@ -23,29 +25,37 @@ import static java.util.Optional.ofNullable;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EmployeesServiceImpl implements EmployeesService {
-    private final EmployeesRepository employeesRepository;
     private final DepartmentService departmentService;
+    Map<Integer, Employees> employeesMap = new HashMap<>();
 
 
     @Override
     public Employees findEmployees(int employeesId) {
-        return employeesRepository.findById(employeesId)
-                .orElseThrow(() -> new TestNotFoundExeption("Employees", format("Employees with ID %s not found", employeesId)));
+      return employeesMap.get(employeesId);
     }
 
     @Override
     public Employees createEmployees(EmployeesRequest employeesRequest) {
         Employees employees = new Employees();
+        employees.setEmployeesId(employeesRequest.getEmployeesId());
         employees.setActive(YES);
         employees.setEmployeesName(employeesRequest.getEmployeesName());
-        log.info("Employees successfully created");
         return this.save(employees);
     }
 
     @Override
     public List<Employees> getEmployees() {
-        return employeesRepository.findAll();
+        return this.getAllEmployees();
     }
+
+    @Override
+    public Page<Employees> getEmployees(int page) {
+        List<Employees> employeesList = getAllEmployees();
+        Page<Employees> employees = new PageImpl<>(employeesList,PageRequest.of(page, 2),3);
+        return employees;
+    }
+
+
 
     @Override
     public Employees update(EmployeesRequest employeesRequest) {
@@ -53,11 +63,12 @@ public class EmployeesServiceImpl implements EmployeesService {
         ofNullable(employeesRequest.getEmployeesName()).ifPresent(employees::setEmployeesName);
         if (employeesRequest.getEmployeesStatus().equals("NO")) {
             employees.setActive(NO);
+        } else employees.setActive(YES);
+        if (employeesRequest.getDepartmentId() != 0) {
+            Departments departments = departmentsMap.get(employeesRequest.getDepartmentId());
+            employees.setEmployeesDepartments(departments);
         }
-        Departments department = departmentService.getDepartment(employeesRequest.getDepartmentId());
-        employees.setEmployeesDepartments(department);
-        log.info("Employees with ID {} updated", employees.getEmployeesId());
-        return employeesRepository.save(employees);
+        return this.save(employees);
     }
 
     @Override
@@ -65,23 +76,37 @@ public class EmployeesServiceImpl implements EmployeesService {
         Employees employees = this.findEmployees(employerId);
         Departments department = departmentService.getDepartment(departmentId);
         employees.setEmployeesDepartments(department);
-        log.info("Employees with ID {} added to department {}", employerId, departmentId);
         return this.save(employees);
     }
 
     @Override
-    public void deleteEmployees(int employerId) {
-        Employees employees = this.findEmployees(employerId);
-        log.info("Employees with ID {} deleted", employerId);
-        employeesRepository.deleteById(employees.getEmployeesId());
+    public void deleteEmployees(int employerId) throws TestNotFoundExeption {
+        employeesMap.remove(employerId);
     }
 
     @Override
-    public Employees searchByName(String name) {
-        return employeesRepository.findByEmployeesName(name);
+    public List<Employees> searchByName(String name) {
+        List<Employees> employeesList = new ArrayList<>();
+        Iterator<Map.Entry<Integer, Employees>> iterator = employeesMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Employees value = iterator.next().getValue();
+            if (value.getEmployeesName().equals(name)){
+                employeesList.add(value);
+            }
+        }
+        return employeesList;
     }
 
     private Employees save(Employees employees) {
-        return employeesRepository.save(employees);
+        return employeesMap.put(employees.getEmployeesId(),employees);
+    }
+
+    private List<Employees> getAllEmployees() {
+        List<Employees> employeesList = new ArrayList<>();
+        Iterator<Map.Entry<Integer, Employees>> iterator = employeesMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            employeesList.add(iterator.next().getValue());
+        }
+        return employeesList;
     }
 }

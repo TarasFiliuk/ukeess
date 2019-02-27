@@ -18,6 +18,7 @@ public class Employees implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int employeesId;
+
     @Column(name = "employees_name")
     private String employeesName;
 
@@ -30,7 +31,6 @@ public class Employees implements Serializable {
 
     public enum Active {
         YES, NO;
-
         public boolean isActive() {
             return YES.equals(this);
         }
@@ -38,6 +38,5 @@ public class Employees implements Serializable {
         public boolean isNonActive() {
             return NO.equals(this);
         }
-
     }
 }

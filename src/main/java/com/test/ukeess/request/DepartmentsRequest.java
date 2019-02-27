@@ -8,4 +8,5 @@ import lombok.Setter;
 public class DepartmentsRequest {
     private String departmentName;
     private int employeesId;
+    private int id;
 }

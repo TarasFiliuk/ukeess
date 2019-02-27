@@ -1,52 +1,117 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 <head>
     <title>Hello World!</title>
-</head>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="http://code.jquery.com/jquery-1.11.2.min.js" type="text/javascript"></script>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-<body>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+</head>
+
+<body style="margin-left: 1%">
 <h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>
 <form th:action="@{/logout}" method="post">
     <input type="submit" value="Sign Out"/>
 </form>
 <header>
     <H1>JSON AND AJAX</H1>
-    <button class="btn">Get all employees</button>
 </header>
+<input type="button" class="btn" value="Get all employees" style="color: white; background-color : black">
 <div class="employees"></div>
 <div id="deleteEmployees"></div>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
 </body>
+<div class="container" style="margin-left: 0%;margin-bottom: 2%">
+    <div class="card">
+        <div class="card-block"></div>
+        <table class="table table-hover">
+            <thed>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Active</th>
+                    <th>Department</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+            </thed>
+            <tbody>
+            <tr id="delete" th:each="data :${data.content}">
+                <td id="idEmpl" th:text="${data.employeesId}"></td>
+                <td th:text="${data.employeesName}"></td>
+                <td th:text="${data.active}"></td>
+                <td th:text="${data.employeesDepartments.departmentName}"></td>
+                <td> <a th:href="@{/findOne/(id=${data.employeesId})}" class="btn btn-primary eBtn">Edit</a></td>
+                <td>
+                    <input type="button" class="delete" id="deletebtn" value="delete">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <hr/>
+        <ul class="nav nav-pills">
+            <li class="nan-item"
+                th:each="i :${#numbers.sequence(0,data.totalPages-1)}">
+                <a th:href="@{/hello/(page = ${i})}" th:text="${i}" class="nan-link" style="padding-right: 15px">
+                </a>
+            </li>
+        </ul>
+    </div>
+
+
+    <div class="myForm">
+        <form th:action="@{/save}" method="post">
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Update or Create</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="employeesId" class="col-form-label">Employees ID:</label>
+                            <input type="text" class="form-control" id="employeesId" name="employeesId" value=""/>
+                        </div>
+                            <div class="form-group">
+                                <label for="employeesName" class="col-form-label">Employees Name:</label>
+                                <input type="text" class="form-control" id="employeesName" name="employeesName" value=""/>
+                            </div>
+                        <div class="form-group">
+                            <label for="employeesStatus" class="col-form-label">Employees Active:</label>
+                            <input type="text" class="form-control" id="employeesStatus" name="employeesStatus" value=""/>
+                        </div>
+                        <div class="form-group">
+                            <label for="departmentId" class="col-form-label">Department ID:</label>
+                            <input type="text" class="form-control" id="departmentId" name="departmentId" value=""/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+
+</div>
 <form th:action="@{/employees/search}" method="post">
     <input type="text" name="name" placeholder="enter name">
     <input type="submit" value="search">
 </form>
 
-<h2>Employees</h2>
-<table id="table">
-    <thead>
-    <tr>
-        <th>Id</th>
-        <th>Name</th>
-        <th>Active</th>
-        <th>Department</th>
-        <th>Delete</th>
-    </tr>
-    </thead>
-    <tbody>
-        <tr id="delete" th:each="employees : ${employees}">
-            <td id="idEmpl" th:text="${employees.employeesId}"></td>
-            <td th:text="${employees.employeesName}"></td>
-            <td th:text="${employees.active}"></td>
-            <td th:text="${employees.employeesDepartments.departmentName}"></td>
-            <td>
-                <input type="button" class="delete" id="deletebtn" value="delete">
-            </td>
-        </tr>
-    </tbody>
-</table>
 
 <script>
     $('.delete').click(function () {
@@ -85,8 +150,19 @@
                 console.log(data);
             }
         });
-
     });
-
+    $(document).ready(function () {
+        $('.table  .eBtn').on('click',function (event) {
+            event.preventDefault();
+            var href = $(this).attr('href');
+            $.get(href,function (employees, status) {
+                $('.myForm #employeesId').val(employees.employeesId)
+                $('.myForm #employeesName').val(employees.employeesName)
+                $('.myForm #employeesStatus').val(employees.active)
+                $('.myForm #departmentId').val(employees.employeesDepartments.id)
+            })
+            $('.myForm  #exampleModal').modal();
+        })
+    })
 </script>
 </html>

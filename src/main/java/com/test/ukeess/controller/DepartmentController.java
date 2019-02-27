@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
@@ -17,6 +18,7 @@ import static com.test.ukeess.utils.Constants.OPERATION_NOT_ALLOWED_MESSAGE;
 import static javax.servlet.http.HttpServletResponse.*;
 import static org.springframework.http.ResponseEntity.ok;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @RequestMapping("/department")
@@ -31,6 +33,7 @@ public class DepartmentController {
     @PostMapping("/create")
     public ResponseEntity createDepartment(@RequestBody DepartmentsRequest departmentsRequest) {
         Departments departments = departmentService.create(departmentsRequest);
+        log.info("Department successfully created");
         return ok().body(departments);
     }
 }
